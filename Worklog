@@ -1,0 +1,211 @@
+import SwiftUI
+
+struct ContentView: View {
+    var body: some View {
+        NavigationView {
+            ZStack {
+                // Background image for main screen
+                Image("mainBackground")
+                    .resizable()
+                    .scaledToFill()
+                    .edgesIgnoringSafeArea(.all)
+
+                VStack(spacing: 20) {
+                    NavigationLink(destination: LogWorkoutScreen()) {
+                        Text("Log Workout")
+                            .font(.largeTitle)
+                            .foregroundColor(.white)
+                            .padding()
+                    }
+                    NavigationLink(destination: CalendarScreen()) {
+                        Text("Calendar")
+                            .font(.largeTitle)
+                            .foregroundColor(.white)
+                            .padding()
+                    }
+                }
+                .navigationBarItems(trailing:
+                    NavigationLink(destination: SettingsScreen()) {
+                        Image(systemName: "gear")
+                            .imageScale(.large)
+                            .foregroundColor(.white)
+                    }
+                )
+            }
+        }
+        .padding()
+    }
+}
+
+struct WorkoutRow: Identifiable {
+    let id = UUID()
+    var exercise: String = ""
+    var sets: String = ""
+    var reps: String = ""
+    var weight: String = ""
+}
+
+struct LogWorkoutScreen: View {
+    @State private var rows: [WorkoutRow] = [WorkoutRow()]
+    @State private var selectedDate = Date()
+    @State private var cardio = ""
+    @State private var duration = ""
+
+    var body: some View {
+        ZStack {
+            // Different background image for the log workout screen
+            Image("logWorkoutBackground")
+                .resizable()
+                .scaledToFill()
+                .edgesIgnoringSafeArea(.all)
+
+            VStack(spacing: 20) {
+                Text("Log Workout")
+                    .font(.system(size: 34, weight: .bold, design: .serif))
+                    .foregroundColor(.white)
+                    .padding(.top)
+
+                HStack {
+                    Text("Date:").foregroundColor(.white)
+                    DatePicker("", selection: $selectedDate, displayedComponents: [.date])
+                        .labelsHidden()
+                        .padding(10)
+                        .background(Color.white)
+                        .cornerRadius(8)
+                }
+                .padding([.leading, .trailing], 20)
+
+                HStack {
+                    Text("Cardio:").foregroundColor(.white)
+                    Spacer()
+                    TextField("Enter cardio type", text: $cardio)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .frame(width: 200)
+                }
+                .padding([.leading, .trailing], 20)
+
+                HStack {
+                    Text("Duration:").foregroundColor(.white)
+                    Spacer()
+                    TextField("Enter duration", text: $duration)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .frame(width: 100)
+                }
+                .padding([.leading, .trailing], 20)
+
+                HStack {
+                    Text("Exercise").foregroundColor(.white)
+                    Spacer()
+                    Text("Sets").foregroundColor(.white)
+                    Spacer()
+                    Text("Reps").foregroundColor(.white)
+                    Spacer()
+                    Text("Wt.").foregroundColor(.white)
+                }
+                .padding([.leading, .trailing], 20)
+
+                ScrollView {
+                    ForEach($rows) { $row in
+                        HStack(spacing: 10) {
+                            TextField("Enter exercise", text: $row.exercise)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .frame(maxWidth: .infinity)
+                            TextField("Enter sets", text: $row.sets)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .frame(width: 50)
+                            TextField("Enter reps", text: $row.reps)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .frame(width: 50)
+                            TextField("Enter weight", text: $row.weight)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .frame(width: 60)
+                        }
+                        .padding([.leading, .trailing], 20)
+                    }
+                }
+
+                Spacer()
+
+                HStack(spacing: 20) {
+                    Spacer()
+                    Button(action: addRow) {
+                        Image(systemName: "plus")
+                            .font(.title)
+                            .foregroundColor(.white)
+                            .frame(width: 60, height: 60)
+                            .background(Color.green)
+                            .clipShape(Circle())
+                            .shadow(radius: 5)
+                    }
+                    Button(action: saveData) {
+                        Text("Save")
+                            .font(.title2)
+                            .foregroundColor(.white)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.blue)
+                            .cornerRadius(10)
+                            .shadow(radius: 5)
+                    }
+                    Spacer()
+                }
+                .padding()
+            }
+            .padding(.top, 40)
+        }
+    }
+
+    private func addRow() {
+        rows.append(WorkoutRow())
+    }
+
+    private func saveData() {
+        // Logic to save workout data
+    }
+}
+
+struct CalendarScreen: View {
+    var body: some View {
+        VStack {
+            Text("Calendar Screen")
+        }
+    }
+}
+
+struct SettingsScreen: View {
+    @State private var selectedLanguage = "English"
+    @State private var selectedBackground = "Default"
+
+    var body: some View {
+        Form {
+            Section(header: Text("Language")) {
+                Picker("Language", selection: $selectedLanguage) {
+                    Text("English").tag("English")
+                    Text("Spanish").tag("Spanish")
+                    Text("Chinese").tag("Chinese")
+                }
+                .pickerStyle(MenuPickerStyle())
+            }
+            
+            Section(header: Text("Background")) {
+                Picker("Background", selection: $selectedBackground) {
+                    Text("Default").tag("Default")
+                    Text("Choose from Gallery").tag("Gallery")
+                }
+                .pickerStyle(MenuPickerStyle())
+                
+                if selectedBackground == "Gallery" {
+                    Button("Select Picture") {
+                        // Action to select picture from gallery
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
+}
